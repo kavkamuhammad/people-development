@@ -54,7 +54,7 @@ class TrainingController extends Controller
                 'jumlah_soal' => $request->jumlah_soal,
                 'jenis_training' => $request->jenis_training,
                 'keterangan' => $request->keterangan,
-                'status' => 'selesai', // Set default selesai atau sesuaikan
+                'status' => 'selesai', // Set selesai agar langsung muncul di evaluasi trainer
             ]);
 
             // Create Training Peserta

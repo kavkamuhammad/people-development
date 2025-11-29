@@ -16,6 +16,7 @@ class Training extends Model
         'jumlah_soal',
         'jenis_training',
         'keterangan',
+        'status',
     ];
 
     protected $casts = [
@@ -60,6 +61,14 @@ class Training extends Model
     public function evaluasiAtasan()
     {
         return $this->hasMany(EvaluasiAtasan::class, 'training_id');
+    }
+
+    /**
+     * Relasi ke Observasi Training
+     */
+    public function observasiTraining()
+    {
+        return $this->hasOne(ObservasiTraining::class, 'training_id');
     }
 
     /**

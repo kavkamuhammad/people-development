@@ -14,6 +14,7 @@ use App\Http\Controllers\MateriTrainingController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Controllers\EvaluasiTrainerController;
 use App\Http\Controllers\EvaluasiAtasanController;
+use App\Http\Controllers\ObservasiTrainingController;
 use App\Http\Controllers\TrainingRecordController;
 use App\Http\Controllers\DashboardController; // ✅ TAMBAHKAN INI
 
@@ -163,6 +164,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/{evaluasiAtasan}/edit', [EvaluasiAtasanController::class, 'edit'])->name('edit');
         Route::put('/{evaluasiAtasan}', [EvaluasiAtasanController::class, 'update'])->name('update');
         Route::get('/{evaluasiAtasan}/print', [EvaluasiAtasanController::class, 'print'])->name('print');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Observasi Training
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('observasi-training')->name('observasi-training.')->group(function () {
+        Route::get('/', [ObservasiTrainingController::class, 'index'])->name('index');
+        Route::get('/create/{training}', [ObservasiTrainingController::class, 'create'])->name('create');
+        Route::post('/store/{training}', [ObservasiTrainingController::class, 'store'])->name('store');
+        Route::get('/show/{training}', [ObservasiTrainingController::class, 'show'])->name('show');
+        Route::get('/edit/{training}', [ObservasiTrainingController::class, 'edit'])->name('edit');
+        Route::put('/update/{training}', [ObservasiTrainingController::class, 'update'])->name('update');
+        Route::delete('/destroy/{training}', [ObservasiTrainingController::class, 'destroy'])->name('destroy');
     });
 
     /*

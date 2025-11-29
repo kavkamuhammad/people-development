@@ -203,6 +203,14 @@
                     <span class="ml-2">Evaluasi Trainer</span>
                 </a>
 
+                <!-- Observasi Training -->
+                <a href="{{ route('observasi-training.index') }}"
+                   class="flex items-center pl-12 py-2 hover:bg-slate-700
+                   {{ request()->routeIs('observasi-training.*') ? 'text-blue-400' : '' }}">
+                    <i class="fas fa-clipboard-check w-6 text-center"></i>
+                    <span class="ml-2">Observasi Training</span>
+                </a>
+
                 <!-- Evaluasi Atasan -->
                 <a href="{{ route('evaluasi-atasan.index') }}"
                    class="flex items-center pl-12 py-2 hover:bg-slate-700

@@ -67,24 +67,33 @@ class EvaluasiTrainerController extends Controller
     public function store(Request $request, Training $training)
     {
         $validated = $request->validate([
-            'peserta_ids' => 'required|array|min:1',
-            'peserta_ids.*' => 'required|exists:training_pesertas,id',
-            'relevansi_materi' => 'required|in:SB,B,C,K',
-            'pemahaman_materi' => 'required|in:SB,B,C,K',
-            'penguasaan_trainer' => 'required|in:SB,B,C,K',
-            'penyampaian_trainer' => 'required|in:SB,B,C,K',
-            'fasilitas' => 'required|in:SB,B,C,K',
-            'manfaat_keseluruhan' => 'required|in:SB,B,C,K',
+            'evaluasi' => 'required|array|min:1',
+            'evaluasi.*.relevansi_materi' => 'required|in:SB,B,C,K',
+            'evaluasi.*.pemahaman_materi' => 'required|in:SB,B,C,K',
+            'evaluasi.*.penguasaan_trainer' => 'required|in:SB,B,C,K',
+            'evaluasi.*.penyampaian_trainer' => 'required|in:SB,B,C,K',
+            'evaluasi.*.fasilitas' => 'required|in:SB,B,C,K',
+            'evaluasi.*.manfaat_keseluruhan' => 'required|in:SB,B,C,K',
+        ], [
+            'evaluasi.required' => 'Pilih minimal 1 peserta dan isi penilaian',
+            'evaluasi.*.*.required' => 'Semua aspek penilaian harus diisi',
+            'evaluasi.*.*.in' => 'Nilai penilaian tidak valid',
         ]);
 
         $created = 0;
+        $errors = [];
         
-        DB::transaction(function () use ($validated, $training, &$created) {
-            foreach ($validated['peserta_ids'] as $pesertaId) {
+        DB::transaction(function () use ($validated, $training, &$created, &$errors) {
+            foreach ($validated['evaluasi'] as $pesertaId => $penilaian) {
                 // Verify peserta belongs to this training
                 $peserta = TrainingPeserta::where('id', $pesertaId)
                     ->where('training_id', $training->id)
-                    ->firstOrFail();
+                    ->first();
+
+                if (!$peserta) {
+                    $errors[] = "Peserta ID {$pesertaId} tidak valid";
+                    continue;
+                }
 
                 // Check if already evaluated
                 $exists = EvaluasiTrainer::where('training_id', $training->id)
@@ -92,7 +101,8 @@ class EvaluasiTrainerController extends Controller
                     ->exists();
 
                 if ($exists) {
-                    continue; // Skip jika sudah ada
+                    $errors[] = "{$peserta->employee->name} sudah dievaluasi sebelumnya";
+                    continue;
                 }
 
                 EvaluasiTrainer::create([
@@ -101,20 +111,25 @@ class EvaluasiTrainerController extends Controller
                     'trainer_id' => $training->trainer_id,
                     'materi_training' => $training->materiTraining->nama_materi ?? '-',
                     'tanggal_training' => $training->tanggal_training,
-                    'relevansi_materi' => $validated['relevansi_materi'],
-                    'pemahaman_materi' => $validated['pemahaman_materi'],
-                    'penguasaan_trainer' => $validated['penguasaan_trainer'],
-                    'penyampaian_trainer' => $validated['penyampaian_trainer'],
-                    'fasilitas' => $validated['fasilitas'],
-                    'manfaat_keseluruhan' => $validated['manfaat_keseluruhan'],
+                    'relevansi_materi' => $penilaian['relevansi_materi'],
+                    'pemahaman_materi' => $penilaian['pemahaman_materi'],
+                    'penguasaan_trainer' => $penilaian['penguasaan_trainer'],
+                    'penyampaian_trainer' => $penilaian['penyampaian_trainer'],
+                    'fasilitas' => $penilaian['fasilitas'],
+                    'manfaat_keseluruhan' => $penilaian['manfaat_keseluruhan'],
                 ]);
                 
                 $created++;
             }
         });
 
+        $message = "Evaluasi trainer berhasil disimpan untuk {$created} peserta!";
+        if (!empty($errors)) {
+            $message .= ' Catatan: ' . implode(', ', $errors);
+        }
+
         return redirect()->route('evaluasi-trainer.create', $training)
-            ->with('success', 'Evaluasi trainer berhasil disimpan untuk ' . $created . ' peserta!');
+            ->with('success', $message);
     }
 
     /**

@@ -8,7 +8,7 @@
     <div class="flex justify-between items-start mb-6">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">Hasil Evaluasi Trainer</h1>
-            <p class="text-gray-600 mt-2">{{ $training->materiTraining->nama ?? '-' }}</p>
+            <p class="text-gray-600 mt-2">{{ $training->materiTraining->nama_materi ?? '-' }}</p>
         </div>
         <a href="{{ route('evaluasi-trainer.index') }}" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
             <i class="fas fa-arrow-left mr-2"></i>
@@ -22,7 +22,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
                 <p class="text-sm text-gray-600">Materi</p>
-                <p class="font-semibold">{{ $training->materiTraining->nama ?? '-' }}</p>
+                <p class="font-semibold">{{ $training->materiTraining->nama_materi ?? '-' }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-600">Tanggal</p>
@@ -32,7 +32,7 @@
             </div>
             <div>
                 <p class="text-sm text-gray-600">Trainer</p>
-                <p class="font-semibold">{{ $training->trainer->nama ?? '-' }}</p>
+                <p class="font-semibold">{{ $training->trainer->nama_trainer ?? '-' }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-600">Total Evaluasi</p>
@@ -116,7 +116,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 text-sm">{{ $index + 1 }}</td>
                                 <td class="px-4 py-3 text-sm font-medium">
-                                    {{ $eval->peserta->karyawan->nama ?? '-' }}
+                                    {{ $eval->peserta->employee->name ?? '-' }}
                                 </td>
 
                                 @foreach([
