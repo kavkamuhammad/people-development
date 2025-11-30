@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\JobLevelController;
 use App\Http\Controllers\EmployeeController;
@@ -79,6 +80,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [RoleController::class, 'index'])->name('index');
         Route::get('/create', [RoleController::class, 'create'])->name('create');
         Route::post('/', [RoleController::class, 'store'])->name('store');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('show');
         Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('edit');
         Route::patch('/{role}', [RoleController::class, 'update'])->name('update');
         Route::delete('/{role}', [RoleController::class, 'destroy'])->name('destroy');
@@ -86,9 +88,24 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | Data Master
+    | Permission Management
     |--------------------------------------------------------------------------
     */
+    Route::prefix('permissions')->name('permissions.')->group(function () {
+        Route::get('/', [PermissionController::class, 'index'])->name('index');
+        Route::get('/create', [PermissionController::class, 'create'])->name('create');
+        Route::post('/', [PermissionController::class, 'store'])->name('store');
+        Route::get('/{permission}', [PermissionController::class, 'show'])->name('show');
+        Route::get('/{permission}/edit', [PermissionController::class, 'edit'])->name('edit');
+        Route::patch('/{permission}', [PermissionController::class, 'update'])->name('update');
+        Route::delete('/{permission}', [PermissionController::class, 'destroy'])->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Data Master
+    |--------------------------------------------------------------------------
+*/
     Route::prefix('data-master')->name('data-master.')->group(function () {
 
         // Employees
@@ -158,9 +175,9 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('evaluasi-atasan')->name('evaluasi-atasan.')->group(function () {
         Route::get('/', [EvaluasiAtasanController::class, 'index'])->name('index');
-        Route::get('/{training}/create', [EvaluasiAtasanController::class, 'create'])->name('create');
-        Route::post('/{training}', [EvaluasiAtasanController::class, 'store'])->name('store');
-        Route::get('/{training}/show', [EvaluasiAtasanController::class, 'show'])->name('show');
+        Route::get('/create/{training}', [EvaluasiAtasanController::class, 'create'])->name('create');
+        Route::post('/store/{training}', [EvaluasiAtasanController::class, 'store'])->name('store');
+        Route::get('/{evaluasiAtasan}/show', [EvaluasiAtasanController::class, 'show'])->name('show');
         Route::get('/{evaluasiAtasan}/edit', [EvaluasiAtasanController::class, 'edit'])->name('edit');
         Route::put('/{evaluasiAtasan}', [EvaluasiAtasanController::class, 'update'])->name('update');
         Route::get('/{evaluasiAtasan}/print', [EvaluasiAtasanController::class, 'print'])->name('print');
@@ -188,6 +205,7 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('training-record')->name('training-record.')->group(function () {
         Route::get('/', [TrainingRecordController::class, 'index'])->name('index');
+        Route::get('/export-excel', [TrainingRecordController::class, 'exportExcel'])->name('export-excel');
         Route::get('/{employee}/show', [TrainingRecordController::class, 'show'])->name('show');
         Route::get('/{employee}/export', [TrainingRecordController::class, 'export'])->name('export');
         Route::post('/compare', [TrainingRecordController::class, 'compare'])->name('compare');

@@ -105,6 +105,13 @@
                     <i class="fas fa-user-shield w-6 text-center"></i>
                     <span class="ml-2">Role</span>
                 </a>
+
+                <a href="{{ route('permissions.index') }}"
+                   class="flex items-center pl-12 py-2 hover:bg-slate-700
+                   {{ request()->routeIs('permissions.*') ? 'text-blue-400' : '' }}">
+                    <i class="fas fa-key w-6 text-center"></i>
+                    <span class="ml-2">Permission</span>
+                </a>
             </div>
         </div>
 
@@ -231,29 +238,6 @@
 
     </nav>
 
-    <!-- USER INFO -->
-    <div class="border-t border-slate-700 p-4">
-        <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                <span class="text-white font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</span>
-            </div>
-
-            <div x-show="sidebarOpen" class="ml-3">
-                <p class="text-sm font-medium">{{ Auth::user()->name ?? 'User' }}</p>
-                <p class="text-xs text-slate-400">
-                    {{ Auth::user()->role->display_name ?? 'No Role' }}
-                </p>
-            </div>
-        </div>
-
-        <form method="POST" action="{{ route('logout') }}" class="mt-3" x-show="sidebarOpen">
-            @csrf
-            <button type="submit"
-                class="w-full text-left text-sm text-red-400 hover:text-red-300">
-                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-            </button>
-        </form>
-    </div>
 </aside>
 
 
@@ -263,7 +247,51 @@
             <!-- PAGE HEADER -->
             <header class="h-16 bg-white shadow flex items-center justify-between px-6">
                 <h1 class="text-xl font-semibold text-gray-800">@yield('page-title')</h1>
-                <span class="text-sm text-gray-600">{{ now()->format('l, d M Y') }}</span>
+                
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600">{{ now()->format('l, d M Y') }}</span>
+                    
+                    <!-- User Dropdown -->
+                    <div x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" 
+                                class="flex items-center space-x-2 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center">
+                                <span class="text-white text-sm font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</span>
+                            </div>
+                            <div class="text-left hidden md:block">
+                                <p class="text-sm font-medium text-gray-800">{{ Auth::user()->name ?? 'User' }}</p>
+                                <p class="text-xs text-gray-500">{{ Auth::user()->role->display_name ?? 'No Role' }}</p>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-gray-600"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div x-show="open" 
+                             @click.away="open = false"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                             style="display: none;">
+                            
+                            <div class="px-4 py-2 border-b border-gray-200">
+                                <p class="text-sm font-medium text-gray-800">{{ Auth::user()->name }}</p>
+                                <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
+                            </div>
+                            
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" 
+                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </header>
 
             <!-- PAGE CONTENT -->

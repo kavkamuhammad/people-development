@@ -45,7 +45,7 @@ class Employee extends Model
 
     public function trainingRecords()
 {
-    return $this->hasMany(TrainingPeserta::class, 'karyawan_id');
+    return $this->hasMany(TrainingPeserta::class, 'employee_id');
 }
 
 public function evaluasiAtasanReceived()
@@ -53,7 +53,7 @@ public function evaluasiAtasanReceived()
     return $this->hasManyThrough(
         EvaluasiAtasan::class,
         TrainingPeserta::class,
-        'karyawan_id', // Foreign key on TrainingPeserta
+        'employee_id', // Foreign key on TrainingPeserta
         'peserta_id',  // Foreign key on EvaluasiAtasan
         'id',          // Local key on Employee
         'id'           // Local key on TrainingPeserta

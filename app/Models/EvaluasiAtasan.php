@@ -17,7 +17,7 @@ class EvaluasiAtasan extends Model
         'atasan_id',
         'nama_karyawan',
         'materi_training',
-        'departement',
+        'department',
         'tanggal_training',
         'peningkatan_keterampilan',
         'uraian_peningkatan_keterampilan',
@@ -139,8 +139,8 @@ class EvaluasiAtasan extends Model
      */
     public static function getAverageByDepartment()
     {
-        return self::selectRaw('departement, AVG(total_skor) as avg_skor, COUNT(*) as jumlah')
-            ->groupBy('departement')
+        return self::selectRaw('department, AVG(total_skor) as avg_skor, COUNT(*) as jumlah')
+            ->groupBy('department')
             ->orderByDesc('avg_skor')
             ->get();
     }

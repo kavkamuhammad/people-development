@@ -1,88 +1,104 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Manajemen Permissions</h2>
-    <a href="{{ route('permissions.create') }}" class="btn btn-primary">Tambah Permission</a>
-</div>
+@section('page-title', 'Permissions')
 
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="permissionsTable" class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Nama</th>
-                        <th>Display Name</th>
-                        <th>Deskripsi</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($permissions as $permission)
-                    <tr>
-                        <td></td> {{-- biar DataTables isi otomatis --}}
-                        <td>{{ $permission->name }}</td>
-                        <td>{{ $permission->display_name }}</td>
-                        <td>{{ $permission->description ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('permissions.edit', $permission) }}" class="btn btn-sm btn-outline-primary">Edit</a>
-                            <form method="POST" action="{{ route('permissions.destroy', $permission) }}" class="d-inline">
+@section('content')
+<div class="w-full">
+    <!-- Header -->
+    <div class="mb-6 flex justify-between items-center">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Data Permissions</h2>
+            <p class="text-gray-600 mt-1">Kelola permissions untuk sistem role & permission</p>
+        </div>
+        <a href="{{ route('permissions.create') }}"
+           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <i class="fas fa-plus mr-2"></i>Tambah Permission
+        </a>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        No
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Display Name
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Description
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Used By Roles
+                    </th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Aksi
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($permissions as $index => $permission)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ $index + 1 }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-mono bg-gray-100 text-gray-800 rounded">
+                            {{ $permission->name }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ $permission->display_name }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        {{ $permission->description ?? '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
+                            {{ $permission->roles->count() }} roles
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                        <div class="flex justify-center space-x-2">
+                            <a href="{{ route('permissions.show', $permission->id) }}"
+                               class="text-blue-600 hover:text-blue-900"
+                               title="Detail">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ route('permissions.edit', $permission->id) }}"
+                               class="text-yellow-600 hover:text-yellow-900"
+                               title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ route('permissions.destroy', $permission->id) }}"
+                                  method="POST"
+                                  class="inline"
+                                  onsubmit="return confirm('Yakin ingin menghapus permission ini?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                        onclick="return confirm('Yakin hapus permission ini?')">Hapus</button>
+                                <button type="submit"
+                                        class="text-red-600 hover:text-red-900"
+                                        title="Hapus">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </form>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="text-center">Tidak ada data</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        Tidak ada data permission
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-$(document).ready(function() {
-    let table = $('#permissionsTable').DataTable({
-        responsive: true,
-        pageLength: 10,
-        ordering: true,
-        columnDefs: [{
-            targets: 0, // Kolom No
-            orderable: false,
-            searchable: false
-        }],
-        language: {
-            "sProcessing": "Sedang memproses...",
-            "sLengthMenu": "Tampilkan _MENU_ entri",
-            "sZeroRecords": "Tidak ada data yang sesuai",
-            "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-            "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-            "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-            "sSearch": "Cari:",
-            "oPaginate": {
-                "sFirst": "Pertama",
-                "sPrevious": "Sebelumnya",
-                "sNext": "Selanjutnya",
-                "sLast": "Terakhir"
-            }
-        }
-    });
-
-    // Auto numbering kolom No
-    table.on('order.dt search.dt', function () {
-        table.column(0, { search:'applied', order:'applied' })
-             .nodes()
-             .each((cell, i) => cell.innerHTML = i + 1);
-    }).draw();
-});
-</script>
-@endpush
